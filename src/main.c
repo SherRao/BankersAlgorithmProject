@@ -1,3 +1,15 @@
+/**
+ * 
+ * CP 386 - Assignment 4
+ * 
+ * 
+ * @author Nausher Rao (190906250) - https://github.com/SherRao/
+ * @author Declan Hollingworth () - https://github.com/wowitsdeclan
+ * 
+ * @see https://github.com/SherRao/BankersAlgorithmProject
+ * 
+ */
+
 #include "main.h"
 
 /**
@@ -15,7 +27,7 @@ int main(int arg_count, char *args[]) {
     }
 
     load_available_resources();
-    load_data_from_file();
+    load_customer_resources();
     run();
 
     return 0;
@@ -23,12 +35,13 @@ int main(int arg_count, char *args[]) {
 
 /**
  * 
- * Loads the bank's resources from the command line.
- * @author <>
+ * Loads the avilable resources from the command line.
+ * @author Nausher Rao
  * 
  */
-void load_available_resources() {
-
+void load_available_resources(int count, int *args[]) {
+	for (int i = 1; i < count; i++) 
+        available_resources[i] = atoi( args[i] );
 
 }
 
@@ -38,14 +51,27 @@ void load_available_resources() {
  * @author <>
  *  
  */
-void load_data_from_file() {
+void load_customer_resources() {
     FILE *file = fopen("sample4_in.txt", "r");
     if (file == NULL) {
         printf("Error opening file \"sample4_in.txt\"");
         return;
     }
 
+    struct stat file_stats;
+	fstat(fileno(file), &file_stats);
+	char* contents = (char*) malloc( ((int)file_stats.st_size + 1) * sizeof(char) );
+    contents[0] = '\0';
 
+    // Add the entire contents of the file to the string.
+    char str[1000];
+    while (fgets(str, sizeof(str), file) != NULL) 
+        strncat(contents, str, strlen(str));
+
+    // Close the file.
+
+
+    fclose(file);
 
 }
 
@@ -61,7 +87,7 @@ void run() {
     char *input;
     while(running) {
         scanf("Command >> %d", input); 
-        for(char *p = input; *p; p++) *p=tolower(*p); // Converts to lower case.
+        for(char *p = input; *p; p++) *p = tolower(*p); // Converts to lower case.
 
         if(strcmp(input, "rq") == 0) {
             request_resource();

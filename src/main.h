@@ -11,7 +11,28 @@
 
 bool running = true;
 
+/**
+ * 
+ * A structure representing a customer - a line in the file.
+ * 
+ */
 struct Customer
 {
-    int *resources;
+    int *max_resources;
+    int *allocated_resources;
+    int *needed_resources;
 };
+
+/**
+ * 
+ * Stores every customer currently in the program.
+ * 
+ */
+struct Customer *customer_resources;
+
+/**
+ * 
+ * Stores every resource available in the program.
+ * 
+ */
+int *available_resources;
