@@ -11,6 +11,7 @@
  */
 
 #include "main.h"
+#include "helper.c"
 
 /**
  * 
@@ -26,9 +27,22 @@ int main(int arg_count, char *args[]) {
 
     }
 
-    load_available_resources();
-    load_customer_resources();
-    run();
+    int resource_amount = load_available_resources(arg_count, args);
+    int customer_amount = load_customer_resources(resource_amount);
+    
+    // Example of how to loop through every custoimer and their max resources.
+    for(int i = 0; i < customer_amount; i++) {
+        struct Customer customer = customer_resources[i];
+        printf("Customer %d\n", i);
+        for(int j = 0; j < resource_amount; j++) {
+            printf("%d ", customer.max_resources[j]);
+
+        }
+
+        printf("\n");
+    }
+
+    // run();
 
     return 0;
 }
@@ -36,43 +50,63 @@ int main(int arg_count, char *args[]) {
 /**
  * 
  * Loads the avilable resources from the command line.
+ * 
+ * @param count The amount of arguments from the command line.
+ * @param args The arguments from the command line.
+ * 
+ * @returns The number of resources per customer.
  * @author Nausher Rao
  * 
  */
-void load_available_resources(int count, int *args[]) {
-	for (int i = 1; i < count; i++) 
-        available_resources[i] = atoi( args[i] );
-
+int load_available_resources(int count, char *args[]) {
+	available_resources = (int *)malloc((count - 1) * sizeof(int));
+    for (int i = 1; i < count; i++)
+        available_resources[i - 1] = atoi(args[i]);
+    
+    return count - 1;
 }
 
 /**
  * 
  * Loads customer data from file.
- * @author <>
+ * 
+ * @param resource_amount The number of resources per customer.
+ * 
+ * @returns The number of customers.
+ * @author Nausher Rao
  *  
  */
-void load_customer_resources() {
+int load_customer_resources(int resource_amount) {
     FILE *file = fopen("sample4_in.txt", "r");
     if (file == NULL) {
         printf("Error opening file \"sample4_in.txt\"");
-        return;
+        return -1;
     }
 
-    struct stat file_stats;
-	fstat(fileno(file), &file_stats);
-	char* contents = (char*) malloc( ((int)file_stats.st_size + 1) * sizeof(char) );
-    contents[0] = '\0';
+    int customer_amount = 0;
+    char line[1000];
 
-    // Add the entire contents of the file to the string.
-    char str[1000];
-    while (fgets(str, sizeof(str), file) != NULL) 
-        strncat(contents, str, strlen(str));
+    // Go through the file line by line to grab the file length.
+    while (fgets(line, sizeof(line), file) != NULL)
+        customer_amount += 1;
 
-    // Close the file.
+    customer_resources = malloc(sizeof(struct Customer) * customer_amount);
+    fseek(file, 0, SEEK_SET);
 
+    // Grabs every line from the file and turn it into a Customer struct.
+    int i = 0;
+    while (fgets(line, sizeof(line), file) != NULL) {
+        struct Customer customer;
+        customer.max_resources = split_int_array(line, ",", resource_amount);
+        customer.allocated_resources = malloc(sizeof(int) * resource_amount);
+        customer.needed_resources = malloc(sizeof(int) * resource_amount);
+
+        customer_resources[i] = customer;
+        i++;
+    }
 
     fclose(file);
-
+    return customer_amount;
 }
 
 /**
@@ -86,7 +120,7 @@ void load_customer_resources() {
 void run() {
     char *input;
     while(running) {
-        scanf("Command >> %d", input); 
+        scanf("Command >> %s", input); 
         for(char *p = input; *p; p++) *p = tolower(*p); // Converts to lower case.
 
         if(strcmp(input, "rq") == 0) {

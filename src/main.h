@@ -36,3 +36,17 @@ struct Customer *customer_resources;
  * 
  */
 int *available_resources;
+
+int load_available_resources(int count, char *args[]);
+
+int load_customer_resources();
+
+void run();
+
+void request_resource();
+
+void release_resource();
+
+void run_resource();
+
+void print_resources();
