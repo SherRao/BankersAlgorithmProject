@@ -21,6 +21,7 @@ struct Customer
     int *max_resources;
     int *allocated_resources;
     int *needed_resources;
+    bool finished;
 };
 
 /**

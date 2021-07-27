@@ -144,6 +144,51 @@ void run() {
     }
 }
 
+/**
+ * 
+ * Checks if the system is in a safe state. 
+ * 
+ * @author Declan Hollingworth 
+ * 
+ */
+int safe_state() {
+
+    int customer_amount; /* Could be len(Customer_resources) */
+    int i;
+    int j = 0;
+    int safe = 0;
+    int work = available_resources;
+    
+    /*Step 1 */
+    for(i=0; i < customer_amount; i++){
+        customer_resources[i].finished = false;
+    }
+    
+    /*Step 2 */
+    for(i=0; i < customer_amount; i++){
+        if (customer_resources[i].finished == false && (customer_resources[i].needed_resources <= work)) {
+            /*Step 4 */
+            work = work + customer_resources[i].allocated_resources;
+            customer_resources[i].finished = true;
+        } else { 
+            /*Step 4 */
+            j = 0;
+            while (j < customer_amount) {
+                if (customer_resources[j].finished == true) {
+                    j++;
+                }
+                if (j == customer_amount - 1){
+                    printf("System is in Safe State");
+                    safe = 1;
+                    break;
+                }
+            }
+        }
+    }
+    return safe;
+}
+
+
 void request_resource() {}
 
 void release_resource() {}
