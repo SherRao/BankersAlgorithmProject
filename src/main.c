@@ -42,7 +42,7 @@ int main(int arg_count, char *args[]) {
         printf("\n");
     }
 
-    // run();
+    //run();
 
     return 0;
 }
@@ -77,9 +77,9 @@ int load_available_resources(int count, char *args[]) {
  *  
  */
 int load_customer_resources(int resource_amount) {
-    FILE *file = fopen("sample4_in.txt", "r");
+    FILE *file = fopen(FILE_NAME, "r");
     if (file == NULL) {
-        printf("Error opening file \"sample4_in.txt\"");
+        printf("Error opening file \"%s\"", FILE_NAME);
         return -1;
     }
 
@@ -100,6 +100,7 @@ int load_customer_resources(int resource_amount) {
         customer.max_resources = split_int_array(line, ",", resource_amount);
         customer.allocated_resources = malloc(sizeof(int) * resource_amount);
         customer.needed_resources = malloc(sizeof(int) * resource_amount);
+        customer_resources[i].finished = false;
 
         customer_resources[i] = customer;
         i++;
@@ -120,7 +121,7 @@ int load_customer_resources(int resource_amount) {
 void run() {
     char *input;
     while(running) {
-        scanf("Command >> %s", input); 
+        sscanf("Command >> %s", input); 
         for(char *p = input; *p; p++) *p = tolower(*p); // Converts to lower case.
 
         if(strcmp(input, "rq") == 0) {
@@ -151,32 +152,25 @@ void run() {
  * @author Declan Hollingworth 
  * 
  */
-int safe_state() {
-
-    int customer_amount; /* Could be len(Customer_resources) */
-    int i;
-    int j = 0;
+int safe_state(int customer_amount) {
     int safe = 0;
     int work = available_resources;
     
-    /*Step 1 */
-    for(i=0; i < customer_amount; i++){
-        customer_resources[i].finished = false;
-    }
-    
     /*Step 2 */
-    for(i=0; i < customer_amount; i++){
-        if (customer_resources[i].finished == false && (customer_resources[i].needed_resources <= work)) {
+    for(int i=0; i < customer_amount; i++){
+        struct Customer cust = cust;
+        if (cust.finished == false && (cust.needed_resources <= work)) {
             /*Step 4 */
-            work = work + customer_resources[i].allocated_resources;
-            customer_resources[i].finished = true;
+            work = work + cust.allocated_resources;
+            cust.finished = true;
         } else { 
             /*Step 4 */
-            j = 0;
+            int j = 0;
             while (j < customer_amount) {
                 if (customer_resources[j].finished == true) {
                     j++;
                 }
+
                 if (j == customer_amount - 1){
                     printf("System is in Safe State");
                     safe = 1;
