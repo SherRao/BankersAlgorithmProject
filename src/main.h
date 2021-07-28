@@ -10,11 +10,12 @@
 #include <ctype.h>
 
 bool running = true;
+
 const char *FILE_NAME = "sample4_in.txt";
 
 /**
  * 
- * A structure representing a customer - a line in the file.
+ * A structure representing a customer/thread.
  * 
  */
 struct Customer
@@ -34,21 +35,35 @@ struct Customer *customer_resources;
 
 /**
  * 
- * Stores every resource available in the program.
+ * Stores the amount of every type of resource available in the program.
  * 
  */
 int *available_resources;
+
+/**
+ * 
+ * Stores the types of resources available in the program. 
+ * 
+ */
+int resource_amount;
+
+/**
+ * 
+ * Stores the amount of customers currently in the program.
+ * 
+ */
+int customer_amount;
 
 int load_available_resources(int count, char *args[]);
 
 int load_customer_resources();
 
-void run();
+void run_program();
 
-void request_resource();
+void request_resources_command(int customer_index, int *requested_resources);
 
-void release_resource();
+void release_resources_command(int customer_index, int *releasing_resources);
 
-void run_resource();
+void run_command();
 
-void print_resources();
+void status_command();
