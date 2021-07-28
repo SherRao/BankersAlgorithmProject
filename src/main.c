@@ -22,13 +22,12 @@
  */
 int main(int arg_count, char *args[]) {
     if(arg_count == 1) {
-        printf("There should be more than one integer arguments!");
+        printf("[System] There should be more than one integer arguments!\n");
         return 1;
     }
 
     load_available_resources(arg_count, args);
     load_customer_resources(resource_amount);
-    
     run_program();
     return 0;
 }
