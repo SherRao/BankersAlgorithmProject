@@ -173,7 +173,7 @@ void run_program() {
  * @author Declan Hollingworth 
  * 
  */
-int safe_state(int customer_amount, int resource_amount) {
+int safe_state(int customer_amount) {
     int safe = 0;
     int *work = available_resources; 
     
@@ -182,9 +182,9 @@ int safe_state(int customer_amount, int resource_amount) {
     for(int i=0; i < customer_amount; i++){
         struct Customer cust = customer_resources[i];
         /*Step 2 */
-        if (cust.finished == false && (need_work_comparison(cust.needed_resources, work, resource_amount) == 1)) {    
+        if (cust.finished == false && (need_work_comparison(cust.needed_resources, need_work_comparison) == 1)) {    
             /*Step 3 */
-            work[i] = array_addition(work, cust.allocated_resources[i], resource_amount);
+            work[i] = array_addition(work, cust.allocated_resources[i]);
             cust.finished = true;
         } else { 
             /*Step 4 */
@@ -214,7 +214,7 @@ int safe_state(int customer_amount, int resource_amount) {
  * @author Declan Hollingworth 
  * 
  */
-int need_work_comparison(int *need, int *work, int resource_amount) {
+int need_work_comparison(int *need, int *work) {
     int greater = 1;
     for(int i = 0; i < resource_amount; i++) {
         if (need[i] > work[i]) {
@@ -233,11 +233,12 @@ int need_work_comparison(int *need, int *work, int resource_amount) {
  * @author Declan Hollingworth 
  * 
  */
-int array_addition(int *work, int *allocation, int resource_amount) {
+int array_addition(int *work, int *allocation) {
     for(int i = 0; i < resource_amount; i++) {
         work[i] = work[i] + allocation[i];
     }
     return work;
+
 }
 
 void request_resources_command(int customer_index, int *requested_resources) {}
