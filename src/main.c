@@ -24,26 +24,12 @@ int main(int arg_count, char *args[]) {
     if(arg_count == 1) {
         printf("There should be more than one integer arguments!");
         return 1;
-
     }
 
-    int resource_amount = load_available_resources(arg_count, args);
-    int customer_amount = load_customer_resources(resource_amount);
+    load_available_resources(arg_count, args);
+    load_customer_resources(resource_amount);
     
-    // Example of how to loop through every custoimer and their max resources.
-    for(int i = 0; i < customer_amount; i++) {
-        struct Customer customer = customer_resources[i];
-        printf("Customer %d\n", i);
-        for(int j = 0; j < resource_amount; j++) {
-            printf("%d ", customer.max_resources[j]);
-
-        }
-
-        printf("\n");
-    }
-
-    //run();
-
+    run_program();
     return 0;
 }
 
@@ -63,7 +49,7 @@ int load_available_resources(int count, char *args[]) {
     for (int i = 1; i < count; i++)
         available_resources[i - 1] = atoi(args[i]);
     
-    return count - 1;
+    resource_amount = count - 1;
 }
 
 /**
@@ -76,14 +62,13 @@ int load_available_resources(int count, char *args[]) {
  * @author Nausher Rao
  *  
  */
-int load_customer_resources(int resource_amount) {
+int load_customer_resources() {
     FILE *file = fopen(FILE_NAME, "r");
     if (file == NULL) {
-        printf("Error opening file \"%s\"", FILE_NAME);
+        printf("[System] Error opening file \"%s\"", FILE_NAME);
         return -1;
     }
 
-    int customer_amount = 0;
     char line[1000];
 
     // Go through the file line by line to grab the file length.
@@ -97,7 +82,7 @@ int load_customer_resources(int resource_amount) {
     int i = 0;
     while (fgets(line, sizeof(line), file) != NULL) {
         struct Customer customer;
-        customer.max_resources = split_int_array(line, ",", resource_amount);
+        customer.max_resources = split_int_array(line, ",");
         customer.allocated_resources = malloc(sizeof(int) * resource_amount);
         customer.needed_resources = malloc(sizeof(int) * resource_amount);
         customer_resources[i].finished = false;
@@ -107,7 +92,6 @@ int load_customer_resources(int resource_amount) {
     }
 
     fclose(file);
-    return customer_amount;
 }
 
 /**
@@ -118,29 +102,66 @@ int load_customer_resources(int resource_amount) {
  * @author Nausher Rao 
  * 
  */
-void run() {
-    char *input;
+void run_program() {
     while(running) {
-        sscanf("Command >> %s", input); 
-        for(char *p = input; *p; p++) *p = tolower(*p); // Converts to lower case.
+        printf("Enter Command >> ");
+        char *input = scan_line();
+        char **args = split_string_array(input, " ");
+        int arg_length = length_string_split_array(input, " ");
+        
 
-        if(strcmp(input, "rq") == 0) {
-            request_resource();
+        // Logic for the "request" command
+        if(strcmp(args[0], "rq") == 0) {
+            if(arg_length == 2 + resource_amount) {
+                int customer_index = atoi(args[1]);
+                int requested_resources[resource_amount];
+                for(int i = 0; i < resource_amount; i++)
+                    requested_resources[i] = atoi(args[2 + i]);
 
-        } else if(strcmp(input, "rl") == 0) {
-            release_resource();
+                request_resources_command(customer_index, requested_resources);
+
+            } else {
+                printf("[System] Error! This command takes %d arguments!\n", resource_amount + 1);
+                printf("[System] Usage: rq <customer_id> ");
+                for(int i = 0; i < resource_amount; i++)  printf("<resource%d> ", i+1);
+                printf("\n");
+            
+            }
+
+        // Logic for the "release" command
+        } else if(strcmp(args[0], "rl") == 0) {
+            if(arg_length == 2 + resource_amount) {
+                int customer_index = atoi(args[1]);
+                int releasing_resources[resource_amount];
+
+                for(int i = 0; i < resource_amount; i++)
+                    releasing_resources[i] = atoi(args[2 + i]);
+
+                release_resources_command(customer_index, releasing_resources);
+
+            } else {
+                printf("[System] Error! This command takes %d arguments!\n", resource_amount + 1);
+                printf("[System] Usage: rl <customer_id> ");
+                for(int i = 0; i < resource_amount; i++) printf("<resource%d> ", i+1);
+                printf("\n");
+            }
+
+
+        // Logic for the "run" command
+        } else if(strcmp(args[0], "run") == 0) {
+            run_command();
         
-        } else if(strcmp(input, "run") == 0) {
-            run_resource();
+        // Logic for the "status" command
+        } else if(strcmp(args[0], "status") == 0) {
+            status_command();
         
-        } else if(strcmp(input, "*") == 0) {
-            print_resources();
-        
-        } else if(strcmp(input, "exit") == 0) {
+        // Logic for the "exit" command
+        } else if(strcmp(args[0], "exit") == 0) {
             running = false;
+            printf("[System] Exiting program...\n");
 
         } else 
-            printf("Invalid command!\n");
+            printf("[System] Invalid command!\n");
 
     }
 }
@@ -152,7 +173,7 @@ void run() {
  * @author Declan Hollingworth 
  * 
  */
-int safe_state(int customer_amount) {
+int safe_state() {
     int safe = 0;
     int work = available_resources;
     
@@ -179,14 +200,50 @@ int safe_state(int customer_amount) {
             }
         }
     }
+
     return safe;
 }
 
 
-void request_resource() {}
+void request_resources_command(int customer_index, int *requested_resources) {}
 
-void release_resource() {}
+void release_resources_command(int customer_index, int *releasing_resources) {}
 
-void run_resource() {}
+void run_command() {}
 
-void print_resources() {}
+/**
+ * 
+ * Prints the current state of the system.
+ * 
+ * @author Nausher Rao
+ * 
+ */
+void status_command() {
+    printf("[System] Printing the current state of the program...\n\n");
+    printf("Customers: %d\n", customer_amount);
+    printf("Resources: %d\n", resource_amount);
+    printf("Available Resources: [ ");
+    for (int i = 0; i < resource_amount; i++)
+        printf("%d ", available_resources[i]);
+
+    printf("]\nCustomers:\n");
+
+    for (int i = 0; i < customer_amount; i++) {
+        struct Customer cust = customer_resources[i];
+        printf("\tCustomer #%d\n", i);
+
+        printf("\t\tAllocated Resources: [ ");
+        for (int j = 0; j < resource_amount; j++)
+            printf("%d ", cust.allocated_resources[j]);
+
+        printf("]\n\t\tMaximum Resources: [ ");
+        for (int j = 0; j < resource_amount; j++) 
+            printf("%d ", cust.max_resources[j]);
+
+        printf("]\n\t\tNeeded Resources: [ ");
+        for (int j = 0; j < resource_amount; j++) 
+            printf("%d ", cust.needed_resources[j]);
+
+        printf("]\n\t\tFinished: %d\n\n", cust.finished);
+    }
+}
