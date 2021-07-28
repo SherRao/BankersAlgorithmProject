@@ -182,32 +182,33 @@ bool safe_state() {
         work[i] = available_resources[i];
     
     /*Set all finish statuses to false */
-    for(int i = 0; i < customer_amount; i++) {
+    for(int i = 0; i < customer_amount; i++)
         customer_resources[i].finished = false;
-    }
 
     /*Set i such that Finish[i] = false and need <= work */
-    for(int i=0; i < customer_amount; i++){
+    bool found = false;
+    for(int i=0; i < customer_amount; i++) {
         struct Customer cust = customer_resources[i];
+
         /*Step 2 */
-        if (cust.finished == false && need_work_comparison(cust.needed_resources, work)) {    
+        if (cust.finished == false && need_work_comparison(cust.needed_resources, work)) {  
+
             /*Step 3 */
             work = array_addition(work, cust.allocated_resources);
             cust.finished = true;
-        } else { 
-            /*Step 4 */
-            int j = 0;
-            while (j < customer_amount) {
-                if (customer_resources[j].finished == true) {
-                    j++;
-                }
 
-                if (j == customer_amount - 1){
-                    safe = true;
-                    break;
-                }
-            }
-        }
+            customer_resources[i] = cust;
+        } 
+    }
+
+    /*Step 4 */
+    int j = 0;
+    while (j < customer_amount) {
+        if (customer_resources[j].finished == true)
+            j++;
+
+        if (j == customer_amount - 1)
+            return true;
     }
 
     return safe;
@@ -221,27 +222,22 @@ void request_resources_command(int customer_index, int *requested_resources) {
 
         bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
         if(is_needed) {
-            printf("[System] is_needed = true\n");
-            
             bool is_available = available_request_comparison(available_resources, requested_resources);
             if(is_available) {
-                printf("[System] is_available = true\n");
-
-
                 for(int i = 0; i < resource_amount; i++) {
                     available_resources[i] = available_resources[i] - requested_resources[i];
                     customer.allocated_resources[i] = customer.allocated_resources[i] + requested_resources[i];
                     customer.needed_resources[i] = customer.needed_resources[i] - requested_resources[i];
                 }
 
-                printf("[System] Requested resources for customer %d\n", customer_index);
+                printf("[System] Requested resources for customer #%d\n", customer_index);
 
             } else {
                 printf("[System] Error! Not enough resources available!\n");
             }   
 
         } else {
-            printf("[System] Error! Not enough resources!\n");
+            printf("[System] Error! Resources arent needed!\n");
         }
         
     } else {
@@ -252,7 +248,10 @@ void request_resources_command(int customer_index, int *requested_resources) {
 
 void release_resources_command(int customer_index, int *releasing_resources) {}
 
-void run_command() {}
+void run_command() {
+
+
+}
 
 /**
  * 

@@ -177,14 +177,11 @@ char *scan_line(void) {
  * 
  */
 bool need_work_comparison(int *need, int *work) {
-    bool greater = false;
-    for(int i = 0; i < resource_amount; i++) {
-        if (need[i] <= work[i]) {
-            greater = true;
-            break;
-        }
-    } 
-    return greater;
+    for(int i = 0; i < resource_amount; i++) 
+        if (need[i] <= work[i]) 
+            return true;
+    
+    return false;
 }
 
 /**
@@ -201,12 +198,10 @@ bool need_work_comparison(int *need, int *work) {
  * 
  */
 bool need_request_comparison(int *need, int *request) {
-    for(int i = 0; i < resource_amount; i++) {
-        if (request[i] <= need[i]) {
+    for(int i = 0; i < resource_amount; i++) 
+        if (request[i] <= need[i]) 
             return true;
 
-        }
-    }
     return false;
 }
 
@@ -224,11 +219,10 @@ bool need_request_comparison(int *need, int *request) {
  * 
  */
 bool available_request_comparison(int *available, int *request) {
-    for(int i = 0; i < resource_amount; i++) {
-        if (request[i] <= available[i]) {
+    for(int i = 0; i < resource_amount; i++) 
+        if (request[i] <= available[i]) 
             return true;
-        }
-    }
+    
     return false;
 }
 
