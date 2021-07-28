@@ -190,13 +190,13 @@ bool need_work_comparison(int *need, int *work) {
 /**
  * 
  * Compares the need to the request. 
- * If need <= work, return true
+ * If request <= need, return true
  * If need > work, return false
  * 
  * @param *need The needed resources.
- * @param *work The work resources.
+ * @param *request The request.
  * 
- * @returns Whether or not need is greater than work.
+ * @returns Whether or not need is greater than request.
  * @author Declan Hollingworth 
  * 
  */
@@ -213,13 +213,13 @@ bool need_request_comparison(int *need, int *request) {
 /**
  * 
  * Compares the available to the request. 
- * If need <= work, return true
- * If need > work, return false
+ * If request <= availible, return true
+ * If request > availible, return false
  * 
- * @param *need The needed resources.
- * @param *work The work resources.
+ * @param *availible The availible resources.
+ * @param *request The request.
  * 
- * @returns Whether or not need is greater than work.
+ * @returns Whether or not availible is greater than work.
  * @author Declan Hollingworth 
  * 
  */

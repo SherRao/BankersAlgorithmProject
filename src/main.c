@@ -176,10 +176,10 @@ void run_program() {
 bool safe_state() {
     bool safe = false;
     int *work = malloc(sizeof(int) * resource_amount);
+    
     for(int i = 0; i < resource_amount; i++)
         work[i] = available_resources[i];
     
-    /* Finish = false for all i to n */
     for(int i = 0; i < customer_amount; i++) {
         customer_resources[i].finished = false;
     }
