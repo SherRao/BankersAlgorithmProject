@@ -84,7 +84,7 @@ int load_customer_resources() {
         struct Customer customer;
         customer.max_resources = split_int_array(line, ",");
         customer.allocated_resources = malloc(sizeof(int) * resource_amount);
-        customer.needed_resources = malloc(sizeof(int) * resource_amount);
+        customer.needed_resources = split_int_array(line, ",");
         customer_resources[i].finished = false;
 
         customer_resources[i] = customer;
@@ -173,18 +173,23 @@ void run_program() {
  * @author Declan Hollingworth 
  * 
  */
-int safe_state(int customer_amount) {
-    int safe = 0;
-    int *work = available_resources; 
+bool safe_state() {
+    bool safe = false;
+    int *work = malloc(sizeof(int) * resource_amount);
+    for(int i = 0; i < resource_amount; i++)
+        work[i] = available_resources[i];
     
     /* Finish = false for all i to n */
+    for(int i = 0; i < customer_amount; i++) {
+        customer_resources[i].finished = false;
+    }
 
     for(int i=0; i < customer_amount; i++){
         struct Customer cust = customer_resources[i];
         /*Step 2 */
-        if (cust.finished == false && (need_work_comparison(cust.needed_resources, need_work_comparison) == 1)) {    
+        if (cust.finished == false && need_work_comparison(cust.needed_resources, work)) {    
             /*Step 3 */
-            work[i] = array_addition(work, cust.allocated_resources[i]);
+            work = array_addition(work, cust.allocated_resources);
             cust.finished = true;
         } else { 
             /*Step 4 */
@@ -193,9 +198,9 @@ int safe_state(int customer_amount) {
                 if (customer_resources[j].finished == true) {
                     j++;
                 }
+
                 if (j == customer_amount - 1){
-                    printf("System is in Safe State");
-                    safe = 1;
+                    safe = true;
                     break;
                 }
             }
@@ -205,43 +210,42 @@ int safe_state(int customer_amount) {
     return safe;
 }
 
-/**
- * 
- * Compares the work to the need. 
- * If need <= work, return 1
- * If need > work, return 0 
- * 
- * @author Declan Hollingworth 
- * 
- */
-int need_work_comparison(int *need, int *work) {
-    int greater = 1;
-    for(int i = 0; i < resource_amount; i++) {
-        if (need[i] > work[i]) {
-            greater = 0;
-            break;
+void request_resources_command(int customer_index, int *requested_resources) {
+    struct Customer customer = customer_resources[customer_index];
+    bool is_safe = safe_state();
+    if(is_safe) {
+        printf("[System] The system is in safe state!\n");
+
+        bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
+        if(is_needed) {
+            printf("[System] is_needed = true\n");
+            
+            bool is_available = available_request_comparison(available_resources, requested_resources);
+            if(is_available) {
+                printf("[System] is_available = true\n");
+
+
+                for(int i = 0; i < resource_amount; i++) {
+                    available_resources[i] = available_resources[i] - requested_resources[i];
+                    customer.allocated_resources[i] = customer.allocated_resources[i] + requested_resources[i];
+                    customer.needed_resources[i] = customer.needed_resources[i] - requested_resources[i];
+                }
+
+                printf("[System] Requested resources for customer %d\n", customer_index);
+
+            } else {
+                printf("[System] Error! Not enough resources available!\n");
+            }   
+
+        } else {
+            printf("[System] Error! Not enough resources!\n");
         }
+        
+    } else {
+        printf("[System] The system is currently not safe!\n");
     }
-    return greater;
-}
-
-
-/**
- * 
- * Auxilary Function to Perform work + allocation operation
- * 
- * @author Declan Hollingworth 
- * 
- */
-int array_addition(int *work, int *allocation) {
-    for(int i = 0; i < resource_amount; i++) {
-        work[i] = work[i] + allocation[i];
-    }
-    return work;
 
 }
-
-void request_resources_command(int customer_index, int *requested_resources) {}
 
 void release_resources_command(int customer_index, int *releasing_resources) {}
 

@@ -17,6 +17,9 @@ int length_string_split_array(char *input, char *delimiter);
 
 char *scan_line();
 
+bool need_work_comparison(int *need, int *work);
+int *array_addition(int *work, int *allocation);
+
 /**
  * 
  * Helper function that splits a string into an array of strings.
@@ -116,7 +119,14 @@ int length_string_split_array(char *input, char *delimiter) {
     return length;
 }
 
-
+/**
+ * 
+ * Scans and returns the line entered by the user from the standard input (Console).
+ * 
+ * @returns A string containing the line entered by the user.
+ * @author Nausher Rao
+ * 
+ */
 char *scan_line(void) {
     int max_length = 100;
     char *result = malloc(max_length);
@@ -151,4 +161,95 @@ char *scan_line(void) {
     result[strcspn(result, "\n")] = 0;
 
     return line;
+}
+
+/**
+ * 
+ * Compares the work to the need. 
+ * If need <= work, return true
+ * If need > work, return false
+ * 
+ * @param *need The needed resources.
+ * @param *work The work resources.
+ * 
+ * @returns Whether or not need is greater than work.
+ * @author Declan Hollingworth 
+ * 
+ */
+bool need_work_comparison(int *need, int *work) {
+    bool greater = true;
+    for(int i = 0; i < resource_amount; i++) {
+        if (need[i] > work[i]) {
+            greater = false;
+            break;
+        }
+    } 
+    return greater;
+}
+
+/**
+ * 
+ * Compares the need to the request. 
+ * If need <= work, return true
+ * If need > work, return false
+ * 
+ * @param *need The needed resources.
+ * @param *work The work resources.
+ * 
+ * @returns Whether or not need is greater than work.
+ * @author Declan Hollingworth 
+ * 
+ */
+bool need_request_comparison(int *need, int *request) {
+    for(int i = 0; i < resource_amount; i++) {
+        if (request[i] <= need[i]) {
+            return true;
+
+        }
+    }
+    return false;
+}
+
+/**
+ * 
+ * Compares the available to the request. 
+ * If need <= work, return true
+ * If need > work, return false
+ * 
+ * @param *need The needed resources.
+ * @param *work The work resources.
+ * 
+ * @returns Whether or not need is greater than work.
+ * @author Declan Hollingworth 
+ * 
+ */
+bool available_request_comparison(int *available, int *request) {
+    for(int i = 0; i < resource_amount; i++) {
+        if (request[i] <= available[i]) {
+            return true;
+        }
+    }
+    return false;
+}
+
+
+
+/**
+ * 
+ * Auxilary Function to Perform work + allocation operation
+ * 
+ * @param *work The work resources.
+ * @param *allocation The allocated resources.
+ * 
+ * @returns The work resources after allocation.
+ * @author Declan Hollingworth 
+ * 
+ */
+int *array_addition(int *work, int *allocation) {
+    for(int i = 0; i < resource_amount; i++) {
+        work[i] = work[i] + allocation[i];
+    }
+
+    return work;
+
 }
