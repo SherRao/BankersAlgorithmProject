@@ -4,7 +4,7 @@
  * 
  * 
  * @author Nausher Rao (190906250) - https://github.com/SherRao/
- * @author Declan Hollingworth () - https://github.com/wowitsdeclan
+ * @author Declan Hollingworth (109765210) - https://github.com/wowitsdeclan
  * 
  * @see https://github.com/SherRao/BankersAlgorithmProject
  * 
