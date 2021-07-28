@@ -177,13 +177,16 @@ bool safe_state() {
     bool safe = false;
     int *work = malloc(sizeof(int) * resource_amount);
     
+    /*Set work = availible */
     for(int i = 0; i < resource_amount; i++)
         work[i] = available_resources[i];
     
+    /*Set all finish statuses to false */
     for(int i = 0; i < customer_amount; i++) {
         customer_resources[i].finished = false;
     }
 
+    /*Set i such that Finish[i] = false and need <= work */
     for(int i=0; i < customer_amount; i++){
         struct Customer cust = customer_resources[i];
         /*Step 2 */

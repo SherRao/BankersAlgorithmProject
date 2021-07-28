@@ -177,10 +177,10 @@ char *scan_line(void) {
  * 
  */
 bool need_work_comparison(int *need, int *work) {
-    bool greater = true;
+    bool greater = false;
     for(int i = 0; i < resource_amount; i++) {
-        if (need[i] > work[i]) {
-            greater = false;
+        if (need[i] <= work[i]) {
+            greater = true;
             break;
         }
     } 
