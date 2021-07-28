@@ -184,9 +184,7 @@ int safe_state(int customer_amount, int resource_amount) {
         /*Step 2 */
         if (cust.finished == false && (need_work_comparison(cust.needed_resources, work, resource_amount) == 1)) {    
             /*Step 3 */
-            for(int x = 0; x < resource_amount; x++) {
-                work[x] = work[x] + cust.allocated_resources[x];
-            }
+            work[i] = array_addition(work, cust.allocated_resources[i], resource_amount);
             cust.finished = true;
         } else { 
             /*Step 4 */
@@ -227,6 +225,20 @@ int need_work_comparison(int *need, int *work, int resource_amount) {
     return greater;
 }
 
+
+/**
+ * 
+ * Auxilary Function to Perform work + allocation operation
+ * 
+ * @author Declan Hollingworth 
+ * 
+ */
+int array_addition(int *work, int *allocation, int resource_amount) {
+    for(int i = 0; i < resource_amount; i++) {
+        work[i] = work[i] + allocation[i];
+    }
+    return work;
+}
 
 void request_resources_command(int customer_index, int *requested_resources) {}
 
