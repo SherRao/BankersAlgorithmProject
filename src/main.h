@@ -20,6 +20,7 @@ const char *FILE_NAME = "sample4_in.txt";
  */
 struct Customer
 {
+    int id;
     int *max_resources;
     int *allocated_resources;
     int *needed_resources;
@@ -65,5 +66,7 @@ void request_resources_command(int customer_index, int *requested_resources);
 void release_resources_command(int customer_index, int *releasing_resources);
 
 void run_command();
+
+void *run_command_function();
 
 void status_command();

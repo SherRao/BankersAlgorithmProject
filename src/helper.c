@@ -8,7 +8,6 @@
 #include <time.h>
 #include <unistd.h>
 #include <ctype.h>
-
 char **split_string_array(char *input, char *delimiter);
 int *split_int_array(char *input, char *delimiter);
 
@@ -199,10 +198,10 @@ bool need_work_comparison(int *need, int *work) {
  */
 bool need_request_comparison(int *need, int *request) {
     for(int i = 0; i < resource_amount; i++) 
-        if (request[i] <= need[i]) 
-            return true;
+        if (request[i] > need[i]) 
+            return false;
 
-    return false;
+    return true;
 }
 
 /**
@@ -220,10 +219,10 @@ bool need_request_comparison(int *need, int *request) {
  */
 bool available_request_comparison(int *available, int *request) {
     for(int i = 0; i < resource_amount; i++) 
-        if (request[i] <= available[i]) 
-            return true;
+        if (request[i] > available[i]) 
+            return false;
     
-    return false;
+    return true;
 }
 
 
