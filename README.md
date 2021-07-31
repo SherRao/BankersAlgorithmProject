@@ -3,7 +3,7 @@
 </h1>
 
 <blockquote align="center">
-  This is a a multi-threaded program that implements the banker's algorithm.
+  This is a a multi-threaded, command-line/CLI based program that implements the banker's algorithm.
 </blockquote>
 
 <br/>
