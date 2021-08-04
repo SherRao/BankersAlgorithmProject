@@ -200,12 +200,15 @@ bool safe_state() {
 
     // Step 4
     int j = 0;
+    int amount = 0;
     while (j < customer_amount) {
         if(customer_resources[j].finished == true)
-            j++;
+            amount++;
 
-        if(j == customer_amount - 1)
+        if(amount == customer_amount - 1)
             return true;
+
+        j++;
     }
 
     return safe;
@@ -213,8 +216,43 @@ bool safe_state() {
 
 void request_resources_command(int customer_index, int *requested_resources) {
     struct Customer customer = customer_resources[customer_index];
-    bool is_safe = safe_state();
+    bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
+    if(is_needed) {
+        bool is_available = available_request_comparison(available_resources, requested_resources);
+        if(is_available) {
+            for(int i = 0; i < resource_amount; i++) {
+                available_resources[i] = available_resources[i] - requested_resources[i];
+            }
 
+            bool is_safe = safe_state();
+            if(is_safe) {
+                printf("[System] The system is safe!\n");
+                for(int i = 0; i < resource_amount; i++) {
+                    customer.allocated_resources[i] = customer.allocated_resources[i] + requested_resources[i];
+                    customer.needed_resources[i] = customer.needed_resources[i] - requested_resources[i];
+                }
+
+            } else {
+                for(int i = 0; i < resource_amount; i++) {
+                    available_resources[i] = available_resources[i] + requested_resources[i];
+                }
+            
+                printf("[System] The system is currently not safe!\n");
+            
+            }
+
+            printf("[System] Requested resources for customer #%d\n", customer_index);
+
+        } else 
+            printf("[System] Error! Not enough resources available!\n");
+
+    } else
+        printf("[System] Error! Resources arent needed!\n");
+}
+
+void request_resources_command1(int customer_index, int *requested_resources) {
+    struct Customer customer = customer_resources[customer_index];
+    bool is_safe = safe_state();
     if(is_safe) {
         printf("[System] The system is in safe state!\n");
         bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
@@ -283,7 +321,6 @@ void run_command() {
 
     printf("[System] The run command is finished! Printing the new state of the program...\n");
     status_command();
-
 }
 
 void *run_command_function(void *customer_id) {
@@ -295,7 +332,6 @@ void *run_command_function(void *customer_id) {
         customer.allocated_resources[i] = 0;
         customer.needed_resources[i] = customer.max_resources[i];
     }
-
 }
 
 /**

@@ -65,9 +65,9 @@ int resource_amount;
  */
 int customer_amount;
 
-int load_available_resources(int count, char *args[]);
+void load_available_resources(int count, char *args[]);
 
-int load_customer_resources();
+void load_customer_resources();
 
 void run_program();
 
@@ -355,7 +355,7 @@ int main(int arg_count, char *args[]) {
  * @author Nausher Rao
  * 
  */
-int load_available_resources(int count, char *args[]) {
+void load_available_resources(int count, char *args[]) {
 	available_resources = (int *)malloc((count - 1) * sizeof(int));
     for (int i = 1; i < count; i++)
         available_resources[i - 1] = atoi(args[i]);
@@ -373,11 +373,11 @@ int load_available_resources(int count, char *args[]) {
  * @author Nausher Rao
  *  
  */
-int load_customer_resources() {
+void load_customer_resources() {
     FILE *file = fopen(FILE_NAME, "r");
     if (file == NULL) {
         printf("[System] Error opening file \"%s\"", FILE_NAME);
-        return -1;
+        exit(-1);
     }
 
     char line[1000];
@@ -494,7 +494,6 @@ bool safe_state() {
         customer_resources[i].finished = false;
 
     // Set i such that Finish[i] = false and need <= work
-    bool found = false;
     for(int i=0; i < customer_amount; i++) {
         struct Customer cust = customer_resources[i];
 
@@ -509,12 +508,15 @@ bool safe_state() {
 
     // Step 4
     int j = 0;
+    int amount = 0;
     while (j < customer_amount) {
         if(customer_resources[j].finished == true)
-            j++;
+            amount++;
 
-        if(j == customer_amount - 1)
+        if(amount == customer_amount - 1)
             return true;
+
+        j++;
     }
 
     return safe;
@@ -522,31 +524,38 @@ bool safe_state() {
 
 void request_resources_command(int customer_index, int *requested_resources) {
     struct Customer customer = customer_resources[customer_index];
-    bool is_safe = safe_state();
+    bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
+    if(is_needed) {
+        bool is_available = available_request_comparison(available_resources, requested_resources);
+        if(is_available) {
+            for(int i = 0; i < resource_amount; i++) {
+                available_resources[i] = available_resources[i] - requested_resources[i];
+            }
 
-    if(is_safe) {
-        printf("[System] The system is in safe state!\n");
-        bool is_needed = need_request_comparison(customer.needed_resources, requested_resources);
-
-        if(is_needed) {
-            bool is_available = available_request_comparison(available_resources, requested_resources);
-            if(is_available) {
+            bool is_safe = safe_state();
+            if(is_safe) {
+                printf("[System] The system is safe!\n");
                 for(int i = 0; i < resource_amount; i++) {
-                    available_resources[i] = available_resources[i] - requested_resources[i];
                     customer.allocated_resources[i] = customer.allocated_resources[i] + requested_resources[i];
                     customer.needed_resources[i] = customer.needed_resources[i] - requested_resources[i];
                 }
 
-                printf("[System] Requested resources for customer #%d\n", customer_index);
+            } else {
+                for(int i = 0; i < resource_amount; i++) {
+                    available_resources[i] = available_resources[i] + requested_resources[i];
+                }
+            
+                printf("[System] The system is currently not safe!\n");
+            
+            }
 
-            } else 
-                printf("[System] Error! Not enough resources available!\n");
+            printf("[System] Requested resources for customer #%d\n", customer_index);
 
-        } else
-            printf("[System] Error! Resources arent needed!\n");
-        
+        } else 
+            printf("[System] Error! Not enough resources available!\n");
+
     } else
-        printf("[System] The system is currently not safe!\n");
+        printf("[System] Error! Resources arent needed!\n");
 }
 
 void release_resources_command(int customer_index, int *releasing_resources) {
@@ -575,7 +584,6 @@ void release_resources_command(int customer_index, int *releasing_resources) {
 void run_command() {
     printf("[System] Starting the run command...\n");
     for(int i = 0; i < customer_amount; i++) {
-        struct Customer cust = customer_resources[i];
         pthread_t thread_id;
         pthread_attr_t thread_attribs;
 
@@ -597,6 +605,8 @@ void *run_command_function(void *customer_id) {
         customer.allocated_resources[i] = 0;
         customer.needed_resources[i] = customer.max_resources[i];
     }
+
+    return NULL;
 }
 
 /**
