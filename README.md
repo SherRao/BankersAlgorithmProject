@@ -8,8 +8,6 @@
 
 <br/>
 
-[![ESLint](https://github.com/SherRao/CP-317/actions/workflows/eslint.yml/badge.svg)](https://github.com/SherRao/BankersAlgorithmProject/actions/workflows/eslint.yml)
-
 [![MIT License](https://img.shields.io/apm/l/atomic-design-ui.svg?)](https://github.com/SherRao/BankersAlgorithmProject/blob/main/LICENSE)
 [![GitHub contributors](https://img.shields.io/github/contributors/SherRao/BankersAlgorithmProject.svg?style=flat)](https://github.com/SherRao/BankersAlgorithmProject/graphs/contributors)
 [![GitHub last commit](https://img.shields.io/github/last-commit/SherRao/BankersAlgorithmProject.svg?style=flat)](https://github.com/SherRao/BankersAlgorithmProject/commits/main)
