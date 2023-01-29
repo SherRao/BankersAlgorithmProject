@@ -15,9 +15,6 @@
 ## Motivation
 The Motivation for the assignment comes from the course requirments of CP383: Operating Systems
 
-## Installation
-x.
-
 ## Preview 
 ![rqCommand](/src/Pictures/rqCommand.png)
 ![statusCommand](/src/Pictures/StatusCommand.png)
